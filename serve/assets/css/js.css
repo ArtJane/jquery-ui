@@ -1,0 +1,54 @@
+.ui-active_create .ui-steps li,
+.ui-active_create .ui-steps li .bar{
+    width: 230px;
+}
+.ui-active_create .ui-steps li .step{
+    left: 100px;
+}
+
+
+.ui-active_create_1 .form-group p{
+    margin: 5px 0 15px;
+}
+.ui-active_create_1 .presets .row,
+.ui-active_create_1 .costs .row{
+    margin-top: 15px;
+}
+.ui-active_create_1 .presets .row:first-child,
+.ui-active_create_1 .costs .row:first-child{
+    margin-top: 0px;
+}
+.ui-active_create_2 h4{
+    margin: 0 0 15px;
+    padding: 7px 10px;
+    border: 1px dashed #cccccc;
+    border-radius: 4px;
+}
+.ui-active_create_2 .memberChild,
+.ui-active_create_2 .frequencyChild{
+    margin-top: 15px;
+}
+.ui-active_create_2 .frequencyChild .form-control{
+    display: inline-block;
+    width: 100px;
+}
+.ui-active_create_3 h4{
+    margin: 0 0 15px;
+    padding: 7px 10px;
+    border: 1px dashed #cccccc;
+    border-radius: 4px;
+}
+.ui-active_create_3 .freightChild{
+    margin-top: 15px;
+}
+.ui-active_create_3 .freightChild .form-control{
+    display: inline-block;
+    width: 150px;
+}
+
+.ui-singleLevel{
+    padding-top: 15px;
+}
+.ui-singleLevel .control-span{
+    padding-bottom: 15px;
+}
