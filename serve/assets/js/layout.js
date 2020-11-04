@@ -1,4 +1,4 @@
-define(["jquery", "@widgets/base"], function ($) {
+define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], function ($) {
 
     $.widget("ui.layout", $.ui.base, {
 
@@ -17,7 +17,7 @@ define(["jquery", "@widgets/base"], function ($) {
             `,
 
             navbar: `
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                     <a class="navbar-brand" href="#">Brand</a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                         <span class="navbar-toggler-icon"></span>
@@ -70,10 +70,10 @@ define(["jquery", "@widgets/base"], function ($) {
             `,
 
             article: `
-                <div class="layout-title">
+                <div class="article-title">
                     <span>登录界面</span>
                 </div>
-                <div class="layout-detail">
+                <div class="article-detail">
                     <span>欢迎光临登录界面~</span>
                 </div>
             `
@@ -90,13 +90,28 @@ define(["jquery", "@widgets/base"], function ($) {
         },
 
         _init: function () {
+            this.element.html(this._tmpl('main', this.options));
+            this.title = this.element.find(".article-title");
+
+            this.title.title({
+                title: "title",
+                buttons: [
+                    {
+                        text: "aaa",
+                        click: function (){
+                            $("<div>").dialog();
+                        }
+                    }
+                ]
+            });
+
+            /*
             window.G = {};
             this._getData(function (res) {
                 this._isTimeZoneNull();
                 this._setOpts(res);
-                this.element.html(this._tmpl('main', this.options));
-                this._getElements();
             });
+            */
         },
 
         _setOpts: function (res) {

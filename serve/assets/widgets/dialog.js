@@ -1,4 +1,4 @@
-define(["jquery", "base"], function($){
+define(["jquery", "@widgets/base"], function($){
 
     $.widget("ui.dialog", $.ui.base, {
     	

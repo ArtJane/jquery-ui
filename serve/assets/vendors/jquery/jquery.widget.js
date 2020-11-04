@@ -505,12 +505,13 @@
             }
 
             $.each(handlers, function (event, handler) {
-                function handlerProxy() {
+                function handlerProxy(e) {
                     if (!suppressDisabledCheck &&
                         (instance.options.disabled === true ||
                             $(this).hasClass("ui-state-disabled"))) {
                         return;
                     }
+                    e.data = {tmpl: instance._tmplItem(e.currentTarget)};
                     return (typeof handler === "string" ? instance[handler] : handler)
                         .apply(instance, arguments);
                 }
