@@ -1,204 +1,97 @@
-define(['jquery', 'base'], function($){
+define(["jquery", "@widgets/base"], function ($) {
 
-    $.widget('ui.layout', $.ui.base, {
+    $.widget("ui.layout", $.ui.base, {
 
         templates: {
 
-            main: '\
-                <div class="layout-header">{{tmpl "layoutHeader"}}</div>\
-                <div class="layout-body">\
-                    <div class="layout-aside">{{tmpl "layoutAside"}}</div>\
-                    <div class="layout-article">{{tmpl "layoutArticle"}}</div>\
-                    <div class="layout-bar">{{tmpl "layoutBar"}}</div>\
-                    <div class="layout-footer">{{tmpl "layoutFooter"}}</div>\
-                </div>',
+            main: `
+                {{tmpl "navbar"}}
+                <div class="d-flex">
+                    <div style="width: 220px;">
+                        {{tmpl "aside"}}
+                    </div>
+                    <div class="flex-grow-1">
+                        {{tmpl "article"}}                       
+                    </div>
+                </div>
+            `,
 
-            layoutHeader: '\
-                <nav class="navbar navbar-primary{{if disableBar}} disable-bar{{/if}}">\
-                    {{tmpl "navbarHeader"}}\
-                    {{tmpl "navbarCollapse"}}\
-                </nav>',
+            navbar: `
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="#">Brand</a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbar-collapse">
+                        {{tmpl "navbarNav"}}
+                        {{tmpl "navbarForm"}}
+                    </div>
+                </nav>
+            `,
 
-            navbarHeader: '\
-                <div class="navbar-header">\
-                    <div class="navbar-brand">\
-                        <a href="${workbenchUrl}"><i class="glyphicon glyphicon-home"></i></a>\
-                        <span class="min"></span>\
-                        <span class="max">${title}</span>\
-                    </div>\
-                    <span class="navbar-switch pull-right"><i class="glyphicon glyphicon-cog"></i></span>\
-                    <span class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-1">MENU</span>\
-                    <span class="navbar-switch pull-left"><i class="glyphicon glyphicon-chevron-left"></i></span>\
-                </div>',
+            navbarNav: `
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Dropdown</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1">Disabled</a>
+                    </li>
+                </ul>
+            `,
 
-            navbarCollapse: '\
-                <div class="collapse navbar-collapse" id="navbar-1">\
-                    {{tmpl "navbarLeft"}}\
-                    {{tmpl "navbarRight"}}\
-                </div>',
+            navbarForm: `
+                <form class="form-inline">
+                    <input type="search" class="form-control mr-sm-2" placeholder="Search">
+                    <button type="submit" class="btn btn-outline-success">Search</button>
+                </form>
+            `,
 
-            navbarLeft: '\
-                <ul class="nav navbar-nav">\
-                    {{tmpl "products"}}\
-                </ul>',
+            aside: `
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active">Cras justo odio</a>
+                    <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                    <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
+                    <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
+                    <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">Vestibulum at eros</a>
+                </div>
+            `,
 
-            products: '\
-                <li class="dropdown products">\
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">产品与服务 <span class="caret"></span></a>\
-                    <div class="dropdown-menu">\
-                        <ul class="nav nav-pills">\
-                            {{tmpl(products) "productPill"}}\
-                        </ul>\
-                        <div class="tab-content"></div>\
-                    </div>\
-                </li>',
-
-            productPill: '\
-                <li><a href="javascript:;" class="product-pill"><i class="${icon}"></i> ${title}</a></li>',
-
-            productPane: '\
-                <div class="row">\
-                    {{tmpl(products) "productList"}}\
-                </div>',
-
-            productList: '\
-                <dl class="col-md-2 col-sm-3">\
-                    <dt><i class="${icon}"></i> ${title}</dt>\
-                    {{each products}}\
-                    <dd><a href="${url}"><i class="${icon}"></i> ${title}</a></dd>\
-                    {{/each}}\
-                </dl>',
-
-            navbarRight: '\
-                <ul class="nav navbar-nav navbar-right">\
-                    {{tmpl "tasks"}}\
-                    {{tmpl(user) "user"}}\
-                </ul>',
-
-            tasks: '\
-                <li class="dropdown">\
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">\
-                        <i class="glyphicon glyphicon-bell"></i>\
-                        <span class="label label-success">0</span>\
-                    </a>\
-                    <ul class="dropdown-menu">\
-                        <li><a href="javascript:;">待办任务</a></li>\
-                        <li><a href="javascript:;">您还没有待办任务哦~</a></li>\
-                        <li role="separator" class="divider"></li>\
-                        <li><a href="http://home.test.i4px.com/allTask" target="_blank">查看全部任务</a></li>\
-                    </ul>\
-                </li>',
-
-            user: '\
-                <li class="dropdown">\
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">\
-                        <i class="glyphicon glyphicon-user"></i> ${username}(${id}) <span class="caret"></span>\
-                    </a>\
-                    <div class="dropdown-menu">\
-                        <div class="media">\
-                            <div class="media-body">\
-                                <h4 class="media-heading">个人信息</h4>\
-                                <p>姓　名：${username}</p>\
-                                <p>手　机：${phone}</p>\
-                                <p>邮　箱：${email}</p>\
-                                <p>办公地：${address}</p>\
-                            </div>\
-                            <div class="media-right">\
-                                <img class="media-object img-circle" src="/img/user.png" alt="用户头像">\
-                            </div>\
-                        </div>\
-                         <div class="time-zone media">\
-                            <div class="zone-body media-body">\
-                                <h4 class="zone-heading media-heading">时区信息</h4>\
-                                <p>时  区：${timezone}</p>\
-                            </div>\
-                            <div class="media-right">\
-                                <a href="${workbenchUrl}preSetting" class="btn btn-default btn-logout"  target="_blank">修改</a>\
-                            </div>\
-                         </div>\
-                        <p>\
-                            <a href="${changePasswordUrl}" class="btn btn-primary">修改密码</a>\
-                            <a href="/logout" class="btn btn-default btn-logout">注销</a>\
-                        </p>\
-                    </div>\
-                </li>',
-
-            layoutAside: '\
-                {{tmpl "asideMenu"}}',
-
-            asideMenu: '\
-                <ul class="menu">\
-                    {{tmpl(menu) "menuItem"}}\
-                </ul>',
-
-            menuItem: '\
-                {{if $data.url}}\
-                    {{tmpl "menuLink"}}\
-                {{else}}\
-                    <li>\
-                        <a href="javascript:;" data-toggle="collapse" data-target="#menu-${$index}">\
-                            <i class="glyphicon glyphicon-menu-left pull-right"></i>\
-                            <i class="${icon}"></i>\
-                            <span>${text}</span>\
-                        </a>\
-                        <ul class="menu collapse" id="menu-${$index}">\
-                            {{tmpl(menu) "menuLink"}}\
-                        </ul>\
-                    </li>\
-                {{/if}}',
-
-            menuLink: '\
-                <li>\
-                    <a href="${url}">\
-                        <i class="${icon}"></i>\
-                        <span>${text}</span>\
-                    </a>\
-                </li>',
-
-            layoutArticle: '\
-                <div class="layout-title">\
-                    <span>登录界面</span>\
-                </div>\
-                <div class="layout-detail">\
-                    <span>欢迎光临登录界面~</span>\
-                </div>',
-
-            layoutBar: '\
-                {{tmpl "barTab"}}',
-
-            barTab: '\
-                <div class="tab-inverse">\
-                    <ul class="nav nav-justified nav-tabs">\
-                        <li class="active"><a href="#home" data-toggle="tab"><i class="glyphicon glyphicon-globe"></i></a></li>\
-                        <li><a href="#profile" data-toggle="tab"><i class="glyphicon glyphicon-comment"></i></a></li>\
-                        <li><a href="#settings" data-toggle="tab"><i class="glyphicon glyphicon-camera"></i></a></li>\
-                    </ul>\
-                    <div class="tab-content">\
-                        <div class="tab-pane active" id="home"></div>\
-                        <div class="tab-pane" id="profile"></div>\
-                        <div class="tab-pane" id="settings"></div>\
-                    </div>\
-                </div>',
-
-            layoutFooter: '\
-                <div class="container text-center">\
-                    <p>${footer}</p>\
-                </div>'
+            article: `
+                <div class="layout-title">
+                    <span>登录界面</span>
+                </div>
+                <div class="layout-detail">
+                    <span>欢迎光临登录界面~</span>
+                </div>
+            `
         },
 
         options: {
-
-            title: 'C类市场活动管理中心',
+            title: "C类市场活动管理中心",
             disableBar: true
         },
 
-        _create: function(){
+        _create: function () {
 
             this._addClass(this.widgetFullName);
         },
 
-        _init: function(){
-            this._getData(function(res){
+        _init: function () {
+            window.G = {};
+            this._getData(function (res) {
                 this._isTimeZoneNull();
                 this._setOpts(res);
                 this.element.html(this._tmpl('main', this.options));
@@ -206,7 +99,7 @@ define(['jquery', 'base'], function($){
             });
         },
 
-        _setOpts: function(res){
+        _setOpts: function (res) {
             var opts = this.options;
             var employee = res.headInfo.employee;
             opts.user = {
@@ -216,24 +109,24 @@ define(['jquery', 'base'], function($){
                 email: employee.email,
                 address: employee.country + employee.province + employee.city,
                 changePasswordUrl: window.G.changePasswordUrl,
-                workbenchUrl : window.G.workbenchUrl,
-                timezone:this._getCookies('pref-timezone')
+                workbenchUrl: window.G.workbenchUrl,
+                timezone: this._getCookies('pref-timezone')
             };
             opts.workbenchUrl = window.G.workbenchUrl;
             opts.footer = res.footBarInfo.footBar;
             opts.products = [];
-            $.each(res.headInfo.dimensionList, function(i, item){
+            $.each(res.headInfo.dimensionList, function (i, item) {
                 opts.products.push({
                     title: item.name,
-                    products: (function(){
+                    products: (function () {
                         var arr = [];
-                        $.each(item.categoryList, function(i, item){
+                        $.each(item.categoryList, function (i, item) {
                             arr.push({
                                 icon: 'glyphicon glyphicon-plus',
                                 title: item.name,
-                                products: (function(){
+                                products: (function () {
                                     var arr = [];
-                                    $.each(item.systemList, function(i, item){
+                                    $.each(item.systemList, function (i, item) {
                                         arr.push({
                                             icon: 'glyphicon glyphicon-menu-right',
                                             title: item.name,
@@ -250,13 +143,13 @@ define(['jquery', 'base'], function($){
             });
 
             opts.menu = [];
-            $.each(res.sideBarInfo.menus, function(i, item){
+            $.each(res.sideBarInfo.menus, function (i, item) {
                 opts.menu.push({
                     icon: 'glyphicon glyphicon-folder-open',
                     text: item.name,
-                    menu: (function(){
+                    menu: (function () {
                         var arr = [];
-                        $.each(item.children, function(i, item){
+                        $.each(item.children, function (i, item) {
                             arr.push({
                                 icon: 'glyphicon glyphicon-file',
                                 text: item.name,
@@ -269,23 +162,35 @@ define(['jquery', 'base'], function($){
             });
         },
 
-        _getData: function(callback){
+        _getData: function (callback) {
             var that = this;
-            $.ajax({
-                url:  window.G.componentsUrl,
+            callback.call(that, {
+                headInfo: {
+                    employee: {},
+                    dimensionList: []
+                },
+                sideBarInfo: {
+                    menus: []
+                },
+                footBarInfo: {
+                    footBar: ""
+                }
+            });
+            /*$.ajax({
+                url: window.G.componentsUrl,
                 type: 'POST',
                 data: {
                     clientId: window.G.clientId || 'IXG0xerbr2iB8RHD',
                     userId: window.G.userId,
                     isInternational: false
                 },
-                success: function(res){
+                success: function (res) {
                     callback.call(that, res);
                 }
-            });
+            });*/
         },
 
-        _getElements: function(){
+        _getElements: function () {
             this.header = this.element.find('.layout-header');
             this.body = this.element.find('.layout-body');
             this.aside = this.body.find('.layout-aside');
@@ -299,7 +204,7 @@ define(['jquery', 'base'], function($){
             this._bindEvents();
         },
 
-        _bindEvents: function(){
+        _bindEvents: function () {
             var that = this;
 
             this._on(this.header, {
@@ -318,7 +223,7 @@ define(['jquery', 'base'], function($){
             });
 
             this.header
-                .on('show.bs.dropdown', '.products', function(event){
+                .on('show.bs.dropdown', '.products', function (event) {
                     var $this = $(this);
                     var left = $this.offset().left;
                     var menu = $this.find('>.dropdown-menu').css({
@@ -332,15 +237,15 @@ define(['jquery', 'base'], function($){
                 .on('show.bs.collapse', '.menu', function (event) {
                     var target = $(event.target);
 
-                    if(target.css('position') === 'absolute'){
+                    if (target.css('position') === 'absolute') {
                         return false;
                     }
                     that.aside.find(target).parent().addClass('open');
                     that.aside.find('.menu.collapse.in').not(event.target).collapse('hide');
                 })
-                .on('hide.bs.collapse', '.menu', function(event){
+                .on('hide.bs.collapse', '.menu', function (event) {
                     var target = $(event.target);
-                    if(target.css('position') === 'absolute'){
+                    if (target.css('position') === 'absolute') {
                         return false;
                     }
                     that.aside.find(target).parent().removeClass('open');
@@ -348,26 +253,27 @@ define(['jquery', 'base'], function($){
 
             this.products.find('.product-pill').eq(0).click();
 
-            this.window.scroll(function(event){
+            this.window.scroll(function (event) {
                 var title = that.article.find('.layout-title');
                 var $this = $(this), interval;
-                if(!title.length){
-                    interval = setInterval(function(){
+                if (!title.length) {
+                    interval = setInterval(function () {
                         title = that.article.find('.layout-title');
-                        if(title.length){
+                        if (title.length) {
                             clearInterval(interval);
                             _setpin();
                         }
                     });
-                }else{
+                } else {
                     _setpin();
                 }
-                function _setpin(){
+
+                function _setpin() {
                     var width = title.width();
-                    if($this.scrollTop() > 50){
+                    if ($this.scrollTop() > 50) {
                         that.article.addClass('pin');
                         title.width(width);
-                    }else{
+                    } else {
                         that.article.removeClass('pin');
                         title.width('auto');
                     }
@@ -375,14 +281,14 @@ define(['jquery', 'base'], function($){
             });
         },
 
-        _clickCollapseA: function(event){
+        _clickCollapseA: function (event) {
             var href = $(event.currentTarget).attr('href');
             window.setGlobal(href, null);
             window.loadPage(href);
             return false;
         },
 
-        _clickSwitchleft: function(){
+        _clickSwitchleft: function () {
 
             this._hideNavbarCollapse();
 
@@ -397,17 +303,17 @@ define(['jquery', 'base'], function($){
             }
         },
 
-        _clickSwitchright: function(){
+        _clickSwitchright: function () {
             this._hideNavbarCollapse();
             this.bar.toggleClass('extend');
         },
 
-        _clickNavbartoggle: function(){
+        _clickNavbartoggle: function () {
             this._hideAside();
             this._hideBar();
         },
 
-        _clickProduct: function(event, item){
+        _clickProduct: function (event, item) {
             $(event.target)
                 .closest('li').addClass('active')
                 .siblings('li').removeClass('active');
@@ -419,27 +325,27 @@ define(['jquery', 'base'], function($){
             return false;
         },
 
-        _hideNavbarCollapse: function(){
+        _hideNavbarCollapse: function () {
             if (this.navbarCollapse.hasClass('in')) {
                 this.navbarCollapse.collapse('hide');
             }
         },
 
-        _hideAside: function(){
+        _hideAside: function () {
             if (this.body.hasClass('transform')) {
                 this.header.find('.navbar-switch.pull-left').trigger('click');
             }
         },
 
-        _hideBar: function() {
+        _hideBar: function () {
             if (this.bar.hasClass('extend')) {
                 this.header.find('.navbar-switch.pull-right').trigger('click');
             }
         },
-        _isTimeZoneNull:function () {
+        _isTimeZoneNull: function () {
             //时区存在，则不设置
             console.log(this._getCookies('pref-timezone'));
-            if(this._getCookies('pref-timezone')!=false || this._getCookies('pref-format')!=''){
+            if (this._getCookies('pref-timezone') != false || this._getCookies('pref-format') != '') {
                 return;
             }
             //时区不存在，默认设置为+8:00      .i4px.com

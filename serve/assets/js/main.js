@@ -1,4 +1,4 @@
-define(['jquery', 'layout'], function($){
+define(["jquery", "layout"], function($){
 
     $('.layout').layout();
 
