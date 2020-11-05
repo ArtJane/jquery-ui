@@ -99,6 +99,7 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                     {
                         text: "aaa",
                         click: function (){
+                            console.log(666)
                             $("<div>").dialog();
                         }
                     }

@@ -5,7 +5,7 @@ define(["jquery", "@widgets/base"], function($){
     	templates: {
 
             main: `
-				<div class="modal-dialog{{if size}} modal-{{size}}{{/if}}">
+				<div class="modal-dialog {{if size}}modal-{{size}}{{/if}}">
 					<div class="modal-content">
 						{{if title}}{{tmpl "header"}}{{/if}}
 						<div class="modal-body">{{html content}}</div>
@@ -15,9 +15,13 @@ define(["jquery", "@widgets/base"], function($){
 			`,
             
             header: `
-				<div class="modal-header">
-					{{if closable}}<button class="close"><span>&times;</span></button>{{/if}}
-					<h4 class="modal-title">{{title}}</h4>
+				<div class="modal-header">					
+					<h5 class="modal-title">{{title}}</h5>
+					{{if closable}}
+					<button type="button" class="close">
+						<span>&times;</span>
+					</button>
+					{{/if}}
 				</div>
 			`,
             
@@ -28,7 +32,7 @@ define(["jquery", "@widgets/base"], function($){
 			`,
             
             button: `
-                <button class="{{clas}} action">{{text}}</button>
+                <button type="button" class="action {{classes}}">{{text}}</button>
             `
             
         },
@@ -45,14 +49,7 @@ define(["jquery", "@widgets/base"], function($){
                 /*
                  {
                      text: "取消",
-                     clas: "btn btn-default",
-                     click: function(event, data){
-                        $(this).dialog('close');
-                     }
-                 },
-                 {
-                     text: "确定",
-                     clas: 'btn btn-primary',
+                     classes: "btn btn-default",
                      click: function(event, data){
                         $(this).dialog('close');
                      }
@@ -62,9 +59,9 @@ define(["jquery", "@widgets/base"], function($){
         },
 
         _create: function(){
-        	this.options.classes[this.widgetFullName] = this.options.fade ?  'modal fade' : 'modal';
+        	this.options.classes[this.widgetFullName] = this.options.fade ?  "modal fade" : "modal";
         	this._addClass(this.widgetFullName);
-        	this.element.attr('tabindex', -1);
+        	this.element.attr("tabindex", -1);
         	
         	this._on({
         		'click .close': '_clickClose',
@@ -78,33 +75,33 @@ define(["jquery", "@widgets/base"], function($){
             }
         	
         	this.element
-            	.html(this._tmpl('main', this.options))
+            	.html(this._tmpl("main", this.options))
             	.appendTo('body')
             	.modal({
             		keyboard: this.options.keyboard,
             		backdrop: this.options.backdrop
             	})
-            	.on('hidden.bs.modal', function (event) {
-            		  $(this).modal('removeBackdrop').remove();
+            	.on("hidden.bs.modal", function (e) {
+            		  $(this).modal("removeBackdrop").remove();
             	});
         },
         
-        _clickClose: function(event){
+        _clickClose: function(e){
 			this.close();
         },
         
-        _clickAction: function(event, tmpl){
+        _clickAction: function(e){
 			var that = this;
-			var data = tmpl.data;
+			var data = e.data.tmpl.data;
 			$.each(that.options.buttons, function(i){
 				if(this.text === data.text && $.isFunction(this.click)){
-					this.click.call(that.element[0], event, data);
+					this.click.call(that.element[0], e, data);
 				}
 			});
 		},
 
 		close: function(){
-        	this.element.modal('hide');
+        	this.element.modal("hide");
         }
 
 	});

@@ -13,10 +13,7 @@ define(["jquery", "@widgets/base"], function ($){
             `,
 
             btn: `
-                <a href="{{href}}" class="action {{classes}}" target="{{target}}">                   
-                    <svg class="bi" width="24" height="24" fill="currentColor">
-                        <use xlink:href="/images/bootstrap-icons.svg#{{icon}}"/>
-                    </svg>                  
+                <a href="{{href}}" class="action {{classes}}" target="{{target}}">
                     {{text}}
                 </a>
             `
@@ -25,14 +22,15 @@ define(["jquery", "@widgets/base"], function ($){
         options: {
             title: "",
             buttons: [
+                /*
                 {
                     href: "/",
                     target: "_self",
-                    icon: "plus",
                     text: "",
                     classes: "btn btn-primary",
                     click: function(){}
                 }
+                */
             ]
         },
 
@@ -52,7 +50,6 @@ define(["jquery", "@widgets/base"], function ($){
                 return $.extend({
                     href: "javascript:;",
                     target: "_self",
-                    icon: "plus",
                     text: "",
                     classes: "btn btn-primary"
                 }, item);
@@ -60,8 +57,10 @@ define(["jquery", "@widgets/base"], function ($){
         },
 
         _clickAction: function (e){
-            if(e.data.tmpl && $.isFunction(e.data.tmpl.click)){
-                e.data.tmpl.click.call(this.element[0], e);
+            var tmpl = e.data.tmpl;
+            var data = tmpl.data;
+            if($.isFunction(data.click)){
+                data.click.call(this.element[0], e);
             }
         }
 

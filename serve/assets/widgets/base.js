@@ -89,7 +89,7 @@ define(["jquery", "widget", "bootstrap", "validate"], function($){
 	};
 
 	//基础数据字典
-	var transCode = JSON.parse(localStorage.getItem('transCode'));
+	/*var transCode = JSON.parse(localStorage.getItem('transCode'));
 	var expire = 1000; //1000 * 60 * 60
 	if(transCode && (new Date().getTime() - transCode.time) <= expire){
 		window.transCode = transCode.data;
@@ -157,7 +157,7 @@ define(["jquery", "widget", "bootstrap", "validate"], function($){
 			$(document).data('dictionary', dic);
 			callback(dic);
 		});
-	};
+	};*/
 
 	//ajax全局设置
 	$(document)
