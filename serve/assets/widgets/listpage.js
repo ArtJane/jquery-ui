@@ -1,6 +1,6 @@
-define(['jquery', 'form', 'table'], function($){
+define(["jquery", "form", "table"], function($){
 
-    $.widget('ui.listpage', $.ui.base, {
+    $.widget("ui.listpage", $.ui.base, {
 
         templates: {
 

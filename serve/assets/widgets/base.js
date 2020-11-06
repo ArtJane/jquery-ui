@@ -19,7 +19,7 @@ define(["jquery", "widget", "bootstrap", "validate"], function($){
 
 	//bootstrap modal原型重写---------------------------------------
 
-	$.fn.modal.Constructor.prototype.hideModal = function () {
+	/*$.fn.modal.Constructor.prototype.hideModal = function () {
 		var that = this;
 		this.$element.hide();
 		this.backdrop(function () {
@@ -30,7 +30,7 @@ define(["jquery", "widget", "bootstrap", "validate"], function($){
 			}
 			that.$element.trigger('hidden.bs.modal');
 		})
-	};
+	};*/
 
 	$.fn.serializeJson = function() {
 		var rCRLF = /\r?\n/g,

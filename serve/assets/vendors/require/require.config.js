@@ -8,6 +8,7 @@ require = {
         popper: "../vendors/popper/popper",
         bootstrap: "../vendors/bootstrap/js/bootstrap",
         widget: "../vendors/jquery/jquery.widget",
+        page: "../vendors/page/page",
         validate: "../vendors/jquery/jquery.validate",
     },
     shim: {

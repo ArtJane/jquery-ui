@@ -5,10 +5,10 @@ define(["jquery", "@widgets/base"], function($){
     	templates: {
 
             main: `
-				<div class="modal-dialog {{if size}}modal-{{size}}{{/if}}">
+				<div class="modal-dialog {{if size}}modal-{{size}}{{/if}} {{if scrollable}}modal-dialog-scrollable{{/if}} {{if centered}}modal-dialog-centered{{/if}}">
 					<div class="modal-content">
 						{{if title}}{{tmpl "header"}}{{/if}}
-						<div class="modal-body">{{html content}}</div>
+						<div class="modal-body"></div>
 						{{if buttons.length}}{{tmpl "footer"}}{{/if}}
 					</div>
 				</div>
@@ -32,18 +32,20 @@ define(["jquery", "@widgets/base"], function($){
 			`,
             
             button: `
-                <button type="button" class="action {{classes}}">{{text}}</button>
+                <button type="button" class="action {{$data.classes || 'btn btn-primary'}}">{{text}}</button>
             `
             
         },
 
-        options: {        	
+        options: {
         	title: "", 			//标题，为空则隐藏头部
             closable: true,		//可关闭
+			scrollable: false,	//可滚动
+			centered: false,	//垂直居中
         	backdrop: true, 	//点击背景关闭，true/false/'static'
         	keyboard: true, 	//按下esc关闭
         	fade: false, 		//动画效果
-        	size: "", 			//尺寸lg/sm
+        	size: "", 			//尺寸xl/lg/sm
         	content: "", 		//内容，字符串或jquery对象
         	buttons: [
                 /*
@@ -59,30 +61,28 @@ define(["jquery", "@widgets/base"], function($){
         },
 
         _create: function(){
-        	this.options.classes[this.widgetFullName] = this.options.fade ?  "modal fade" : "modal";
-        	this._addClass(this.widgetFullName);
-        	this.element.attr("tabindex", -1);
+			this.element.attr({
+				class: this.options.fade ? "ui-dialog modal fade" : "ui-dialog modal",
+				tabindex: -1
+			});
         	
         	this._on({
-        		'click .close': '_clickClose',
-        		'click .action': '_clickAction'
+        		"click .close": "_clickClose",
+        		"click .action": "_clickAction"
         	});
         },
 
         _init: function(){
-            if(this.options.content.jquery){
-                this.options.content = this._outerHtml(this.options.content);
-            }
-        	
         	this.element
             	.html(this._tmpl("main", this.options))
+				.find(".modal-body").html(this.options.content).end()
             	.appendTo('body')
             	.modal({
             		keyboard: this.options.keyboard,
             		backdrop: this.options.backdrop
             	})
             	.on("hidden.bs.modal", function (e) {
-            		  $(this).modal("removeBackdrop").remove();
+            		  $(this).modal("dispose").remove();
             	});
         },
         
