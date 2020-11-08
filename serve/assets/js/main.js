@@ -1,18 +1,6 @@
 define(["jquery", "page", "@widgets/layout"], function($, page){
 
     $(".layout").layout({
-        brand: "AAAAA",
-        nav: [
-            {text: "home", href: "/"},
-            {text: "menu", menu: [
-                    {text: "item1", href: "/item1"},
-                    {text: "item2", href: "/item2"},
-                    {isDivider: true},
-                    {text: "item1", href: "/item1"},
-                    {text: "item2", href: "/item2"}
-                ]
-            }
-        ],
         menu: [
             {text: "home", href: "/"},
             {text: "menu", menu: [

@@ -1,10 +1,10 @@
-define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], function ($) {
+define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], function($) {
 
     $.widget("ui.layout", $.ui.base, {
 
         templates: {
 
-            main: `
+            main: /* html */ `
                 {{tmpl "navbar"}}
                 <div class="d-flex flex-column flex-lg-row">
                     <div style="min-width: 220px;">
@@ -16,7 +16,7 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 </div>
             `,
 
-            navbar: `
+            navbar: /* html */ `
                 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                     <a class="navbar-brand" href="#">{{brand}}</a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
@@ -29,13 +29,13 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 </nav>
             `,
 
-            navbarNav: `
+            navbarNav: /* html */ `
                 <ul class="navbar-nav mr-auto">
                     {{tmpl(nav) "navItem"}}                    
                 </ul>
             `,
 
-            navItem: `
+            navItem: /* html */ `
                 {{if menu}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{{text}}</a>
@@ -54,7 +54,7 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 {{/if}}
             `,
 
-            dropdownItem: `
+            dropdownItem: /* html */ `
                 {{if isDivider}}
                     <div class="dropdown-divider"></div>                    
                 {{else}}
@@ -66,14 +66,14 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 {{/if}}
             `,
 
-            navbarForm: `
+            navbarForm: /* html */ `
                 <form class="form-inline">
                     <input type="search" class="form-control mr-sm-2" placeholder="Search">
                     <button type="submit" class="btn btn-outline-success">Search</button>
                 </form>
             `,
 
-            aside: `
+            aside: /* html */ `
                 <div class="collapse navbar-collapse d-lg-block">
                     <div class="accordion" id="asideAccordion">
                         {{tmpl(menu) "menuItem"}}
@@ -81,7 +81,7 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 </div>
             `,
 
-            menuItem: `
+            menuItem: /* html */ `
                 {{if menu}}
                     <div class="card">
                         <div class="card-header">
@@ -113,7 +113,7 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
                 {{/if}}
             `,
 
-            listGroupItem: `
+            listGroupItem: /* html */ `
                 <a 
                     href="{{href}}" 
                     class="list-group-item list-group-item-action {{if active}}active{{/if}} {{if disabled}}disabled{{/if}}"
@@ -128,27 +128,27 @@ define(["jquery", "@widgets/base", "@widgets/title", "@widgets/dialog"], functio
             menu: []
         },
 
-        _create: function () {
+        _create: function() {
             this._addClass("ui-layout");
         },
 
-        _init: function () {
+        _init: function() {
             this._handleOptions();
             this.element.html(this._tmpl("main", this.options));
             this._getElements();
         },
 
-        _handleOptions: function (){
+        _handleOptions: function() {
             var o = this.options;
-            if($.isFunction(o.nav)){
-                o.nav = o.nav();
+            if ($.isFunction(o.nav)) {
+                o.nav = o.nav.call(this.element[0]);
             }
-            if($.isFunction(o.menu)){
-                o.menu = o.menu();
+            if ($.isFunction(o.menu)) {
+                o.menu = o.menu.call(this.element[0]);
             }
         },
 
-        _getElements: function () {
+        _getElements: function() {
             this.article = this.element.find(".article");
         }
     });
