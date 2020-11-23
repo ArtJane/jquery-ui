@@ -1,264 +1,182 @@
-define(['jquery', 'base', 'paging', 'jqueryui'], function ($) {
+define(['$', 'paging'], function ($) {
 
-    $.widget('ui.table', $.ui.base, {
+    $.widget('ui.table', {
 
         templates: {
 
             main: '\
     			<table class="table table-bordered table-striped table-hover">\
     				<thead>\
-    					<tr>{{tmpl(titles) "th"}}</tr>\
+    					<tr>{{tmpl(columns) "th"}}</tr>\
     				</thead>\
     				<tbody>\
-    					{{if source && source.length}}\
+    					{{if $data.source && $data.source.length}}\
     						{{tmpl(source) "tr"}}\
     					{{else}}\
-    						{{tmpl(titles.length) "defaultTr"}}\
+    						{{tmpl "defaultTr"}}\
     					{{/if}}\
     				</tbody>\
     			</table>\
-    			{{if page}}<p class="paging"></p>{{/if}}',
+    			{{if paging}}<div class="paging"></div>{{/if}}',
 
             th: '\
-                <th {{if width}}style="width: ${width}"{{/if}}>{{html title}}</th>',
+                <th {{if width}}width="{{width}}"{{/if}}>{{html title}}</th>',
 
             tr: '\
                 <tr>\
                 	{{each columns}}\
-                		{{if !skip}}\
-                            {{if replace}}{{html text}}{{else}}<td>{{html text}}</td>{{/if}}\
+                		{{if !$data.skip}}\
+                            {{if replaceParent}}{{html text}}{{else}}<td>{{html text}}</td>{{/if}}\
                 		{{/if}}\
                 	{{/each}}\
                 </tr>',
 
             defaultTr: '\
-    			<tr><td colspan="${$data}">暂无可用数据</td></tr>',
-
-            placeholder: '\
-                <div class="text-center">{{html placeholder}}</div>'
+    			<tr><td colspan="{{$data.columns.length}}">暂无可用数据</td></tr>'
 
         },
-
+        
         options: {
-
-            sortable: false,
-
-            list: {},
+            
+            source: [],
 
             columns: [],
 
-            actions: [],
+            pageNumber: 1,
 
-            checkeddata: {},
-
-            placeholder: '',
-
-            complete: null
-        },
-
-        _list: {
-            url: '',
-            type: 'GET',
-            data: {},
-            keys: {
-                base: '',
-                source: 'result',
-                index: 'id',
-                page: 'pageNum',
-                pageSize: 'pageSize',
-                total: 'total'
-            },
-            page: 1,
             pageSize: 10,
-            source: [],
-            enableCheckbox: false,
-            enableActions: false
+
+            checkbox: {},
+
+            action: {},
+
+            checkedData: {},
+
+            mounted: $.noop
         },
 
         _create: function () {
-
             this._addClass(this.widgetFullName);
-
             this._on({
-                'click .check-all': '_clickCheckAll',
+                'click .checkbox-all': '_clickCheckboxAll',
                 'click a.action': '_clickAction',
-                'click input[type=checkbox]': '_clickCheckbox'
+                'click input[type=checkbox]': '_clickCheckbox',
+                'click input[type=radio]': '_clickCheckbox'
             });
         },
 
-        _init: function () {
-            this.options.list = $.extend({}, this._list, this.options.list);
-            this._getList(this.options.list.page);
-        },
-
-        _getList: function (page) {
-            var list = this.options.list;
-
-            this._getListData(page, function(res){
-
-                if(list.keys.base){
-                    res = res[list.keys.base];
-                }
-
-                this._setListData(res);
-
-                if((!list.source || !list.source.length) && this.options.placeholder){
-                    this.element.html(this._tmpl('placeholder', this.options));
-                    return;
-                }
-
-                this.element.html(this._tmpl('main', list));
-                this.table = this.element.find('table');
-                this.thead = this.table.find('thead');
-                this.tbody = this.table.find('tbody');
-
-                this._setPaging();
-                this._setChecked();
-
-                if(this.options.sortable){
-                    this._setSortable();
-                }
-                this._trigger('complete');
-            });
-        },
-
-        _getListData: function (page, callback) {
+        _init: function () {            
             var that = this;
-            var list = this.options.list;
+            var o = this.options;
 
-            if(!list.url || list.source.length){
-                callback.call(this);
-            }else{
-                $.ajax({
-                    url: list.url,
-                    type: list.type || 'GET',
-                    data: this._getAjaxData(page),
-                    contentType: list.contentType || 'application/x-www-form-urlencoded; charset=utf-8',
-                    cache: false,
-                    success: function (res) {
-                        that._ajaxSuccess(res, callback);
-                    }
+            this._getSource(function(ctx) {
+
+                $.extend(o, ctx);
+
+                if(o.columns.length){
+                    that._extendColumns();
+                }                
+
+                $.each(o.source, function(i, row){
+                    row.columns = that._setColumns(row);
+                });
+
+                that.element.html(that._tmpl('main', o));
+                that.checkboxAll = that.element.find('.checkbox-all');
+                that.tbody = that.element.find('tbody');
+
+                if (o.paging) {
+                    that._setPaging();
+                }
+                if (o.checkbox && o.checkbox.field) {
+                    that._setCheckbox();
+                }
+
+                that._trigger('mounted', null, {
+                    source: o.source
+                });
+            });
+        },
+
+        _getSource(next) {
+            var o = this.options;
+
+            if ($.isFunction(o.source)) {
+                o._source = o.source;
+            }
+
+            if (o._source) {                
+                o._source.call(this.element[0], {
+                    pageNumber: o.pageNumber,
+                    pageSize: o.pageSize,
+                    total: 0,
+                    paging: true,
+                    source: []
+                }, next);
+            } else {
+                o.source = o.source || [];
+                next({
+                    pageNumber: o.pageNumber,
+                    pageSize: o.pageSize,
+                    total: o.source.length,
+                    paging: false,
+                    source: o.source
                 });
             }
-        },
-
-        _getAjaxData: function (page) {
-            var list = this.options.list;
-            var data = {};
-
-            data[list.keys.page] = page || 1;
-            data[list.keys.pageSize] = list.pageSize;
-            data = $.extend({}, list.data, data);
-
-            if (list.contentType && list.contentType.indexOf('application/json') > -1) {
-                data = JSON.stringify(data);
-            }
-
-            return data;
-        },
-
-        _setPaging: function(){
-            var that = this;
-            var list = this.options.list;
-            this.paging = this.element.find('.paging')
-                .paging({
-                    page: list.page,
-                    pageSize: list.pageSize,
-                    total: list.total,
-                    selectPage: function(event, page){
-                        list.source = [];
-                        that._getList(page);
-                    }
-                });
-        },
-
-        _setListData: function (res) {
-            var that = this;
-            var list = this.options.list;
-
-            if(res){
-                list.source = res[list.keys.source];
-                list.page = res[list.keys.page];
-                list.pageSize = res[list.keys.pageSize];
-                list.total = res[list.keys.total];
-            }else{
-                list.page = false;
-            }
-
-            this._extendColumns();
-            list.titles = this.options.columns;
-
-            $.each(list.source, function(i){
-                this.columns = that._setColumns(this);
-            });
-        },
-
-        _setColumns: function (row) {
-            var columns = $.extend(true, [], this.options.columns);
-            $.each(columns, function(i, column){
-                var data = column.data ? (row[column.data] == null ? '' : row[column.data]) : '';
-                if($.isFunction(column.render)){
-                    column.text = column.render(data, row);
-                    if(column.text === false){
-                        column.skip = true;
-                    }else if(column.text && typeof column.text === 'string' && column.text.indexOf('<td') === 0){
-                        column.replace = true;
-                    }
-                }else{
-                    column.text = data;
-                }
-            });
-            return columns;
         },
 
         _extendColumns: function () {
             var that = this;
-            var list = this.options.list;
-            var index = list.keys.index;
-            var columns = this.options.columns;
+            var o = this.options;
+            var columns = o.columns;            
 
-            if(list.enableCheckbox && columns[0].data !== 'checkbox'){
-                columns.unshift({
-                    title: '<input type="checkbox" class="check-all">',
-                    data: 'checkbox',
-                    render: function(data, row){
-                        return '<input type="checkbox" value="' + row[index] + '">';
-                    }
-                });
+            if ((columns[0].field !== 'checkbox') && o.checkbox && o.checkbox.field) {
+                if (o.checkbox.mode === 'radio') {
+                    columns.unshift({
+                        title: '',
+                        field: 'checkbox',
+                        render: function(row){
+                            return '<input type="radio" name="' + o.checkbox.field + '" value="' + row[o.checkbox.field] + '">';
+                        }
+                    });
+                } else {
+                    columns.unshift({
+                        title: '<input type="checkbox" class="checkbox-all">',
+                        field: 'checkbox',
+                        render: function(row){
+                            var disabled = o.checkbox.disabled;
+                            if ($.isFunction(disabled)) {
+                                disabled = !!disabled.call(that.element[0], row);
+                            }
+                            return '<input type="checkbox" name="' + o.checkbox.field + '" value="' + row[o.checkbox.field] + '" ' + (disabled ? 'disabled' : '') + '>';
+                        }
+                    });
+                }
             }
-            if(list.enableActions && columns[columns.length - 1].data !== 'actions'){
+
+            if ((columns[columns.length - 1].data !== 'action') && o.action && o.action.items && o.action.items.length) {
                 columns.push({
-                    title: '操作',
-                    data: 'actions',
-                    render: function(data, row){
+                    title: o.action.title || '操作',
+                    data: 'action',
+                    render: function(row){
                         var ret = '';
-                        var classes = "";
-                        $.each(that.options.actions, function(i, item){
-                            var hide;
-                            if($.isFunction(item.hide)){
-                                hide = item.hide(row);
-                            }else{
-                                hide = item.hide;
+                        $.each(o.action.items, function(i, item){
+                            var hide = false;
+                            var classes = '';
+                            if ($.isFunction(item.hide)) {
+                                hide = !!item.hide.call(that.element[0], row);
                             }
-
-                            if($.isFunction(item.text)){
-                                item._text = item.text(row);
-                            }else{
-                                item._text = item.text;
+                            if (hide) {
+                                classes += 'hidden ';
                             }
-
-                            classes = this.clas ? this.clas + ' action' : 'action';
-                            if(hide){
-                                classes += " hide";
-                            }
-
+                            classes += item.classes ? ('action ' + item.classes) : 'action';
                             ret += $('<a>')
                                 .attr({
-                                    href: this.url ? this.url + '?' + index + '=' + row[index] : 'javascript:;',
-                                    target: this.target,
-                                    class: classes
+                                    href: $.isFunction(item.href) ? item.href.call(that.element[0], row) : (item.href || 'javascript:;'),
+                                    class: classes,
+                                    target: item.target
                                 })
-                                .append(item._text)
+                                .html(item.text)
                                 .prop('outerHTML');
                         });
                         return ret;
@@ -267,36 +185,77 @@ define(['jquery', 'base', 'paging', 'jqueryui'], function ($) {
             }
         },
 
-        _setChecked: function(){
+        _setColumns: function(row) {
             var that = this;
-            $.each(this.options.checkeddata, function(k, v){
-                that.element.find('input[value=' + k + ']').prop('checked', true);
+            var columns = $.extend(true, [], this.options.columns);
+            $.each(columns, function(i, column){
+                var text = column.field ? (row[column.field] == null ? '' : row[column.field]) : "";
+                if ($.isFunction(column.render)) {
+                    column.text = column.render.call(that.element[0], row);
+                    if (column.text === false) {
+                        column.skip = true;
+                    } else if (/^\s*<td\s+/i.test(column.text)) {
+                        column.replaceParent = true;
+                    }
+                } else {
+                    column.text = text;
+                }
             });
+            return columns;
         },
 
-        _clickCheckbox: function(event){
-            var target = $(event.currentTarget);
-            if (target.prop('disabled') || target.hasClass('check-all')) {
+        _setPaging: function() {
+            var that = this;
+            var o = this.options;
+
+            this.paging = this.element.find('.paging')
+                .paging({
+                    pageNumber: o.pageNumber,
+                    pageSize: o.pageSize,
+                    pageSizeList: o.pageSizeList,
+                    total: o.total,
+                    changePageNumber: function(e, ctx){
+                        o.pageNumber = ctx.pageNumber;
+                        that._init();
+                    },
+                    changePageSize: function(e, ctx){
+                        o.pageSize = ctx.pageSize;
+                        that._init();
+                    }
+                });
+        },
+
+        _setCheckbox: function() {
+            var that = this;
+            var o = this.options;
+            $.each(o.checkedData, function(key){
+                that.element.find('input[value=' + key + ']').prop('checked', true);
+            });
+            this._setCheckboxAll();
+        },
+
+        _clickCheckbox: function(e, ctx) {
+            var o = this.options;            
+            var target = $(e.currentTarget);
+            o.checkedData = o.checkedData || {};
+
+            if (target.prop('disabled') || target.hasClass('checkbox-all')) {
                 return;
             }
-            var checkeddata = this.options.checkeddata;
-            var data = this._tmplItem(target).data;
-            var index = data[this.options.list.keys.index];
+            let key = ctx.data[o.checkbox.field];
             if (target.prop('checked')) {
-                if(!checkeddata[index]){
-                    checkeddata[index] = $.extend(true, {}, data);
-                    delete checkeddata[index].columns;
+                if (!o.checkedData[key]) {
+                    o.checkedData[key] = $.extend({}, ctx.data);
+                    delete o.checkedData[key].columns;
                 }
             } else {
-                delete checkeddata[index];
+                delete o.checkedData[key];
             }
+            this._setCheckboxAll();
         },
 
-        _clickCheckAll: function (event) {
-            var target = $(event.currentTarget);
-            if (target.prop('disabled')) {
-                return;
-            }
+        _clickCheckboxAll: function(e) {
+            var target = $(e.currentTarget);
             var checkbox = this.tbody.find('input[type=checkbox]');
             if (target.prop('checked')) {
                 checkbox.prop('checked', false).click();
@@ -305,45 +264,35 @@ define(['jquery', 'base', 'paging', 'jqueryui'], function ($) {
             }
         },
 
-        _clickAction: function (event, tmpl) {
+        _setCheckboxAll: function() {
+            var o = this.options;
+            if (Object.keys(o.checkedData).length === o.source.length) {
+                this.checkboxAll.prop('checked', true);
+            } else {
+                this.checkboxAll.prop('checked', false);
+            }
+        },
+
+        _clickAction: function(event) {
             var that = this;
-            //var text = $(event.target).text();
             var index = $(event.currentTarget).index();
-            $.each(that.options.actions, function(i){
-                if(i == index && $.isFunction(this.click)){
-                    this.click.call(that.element[0], event, tmpl.data);
+            $.each(this.options.action.items, function(i, item){
+                if (i == index && $.isFunction(item.click)) {
+                    item.click.call(that.element[0], event);
                 }
             });
         },
 
-        _setSortable: function(){
-            var that = this;
-            this.tbody.sortable({
-                cursor: 'move',
-                axis: 'y',
-                helper: function(e, ui){
-                    ui.children().each(function() {
-                        $(this).width($(this).width());
-                    });
-                    return ui;
-                },
-                stop: function( event, ui ) {
-                    console.log(ui)
-                }
-            });
-        },
-
-        getCheckedData: function(){
-            var that = this;
+        getCheckedData: function() {
             var rows = [];
-            var ids = [];
-            $.each(this.options.checkeddata, function(k, v){
-                rows.push(v);
-                ids.push(k);
+            var keys = [];
+            $.each(this.options.checkedData, function(key, value) {
+                rows.push(value);
+                keys.push(key);
             });
             return {
                 rows: rows,
-                ids: ids
+                keys: keys
             };
         }
 

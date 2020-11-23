@@ -1,4 +1,4 @@
-define(['jquery', 'base'], function($){
+define(['$'], function($){
 	
 	$.widget('ui.steps', $.ui.base, {
 		

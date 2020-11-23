@@ -1,44 +1,70 @@
-define(['jquery', 'base', 'dialog'], function($){
+define(['$', 'dialog'], function($){
 
-    $.widget('ui.notice', $.ui.base, {
+    $.widget('ui.notice', {
     	
     	templates: {    		
 
 			main: '\
-				<span class="icon ${icon}"></span>\
-				<div class="message">{{html message}}</div>'
+				<span class="icon {{icon}}"></span>\
+				<div>\
+					<div class="title">{{title}}</div>\
+					<div class="content">{{html content}}</div>\
+				</div>'
     	},
     	
     	options: {
-			type: 'info', //类型，success/info/warning/danger
-			message: '', //内容，字符串或jquery对象
-			fade: false,	//动画效果
-			time: 3000,	//自动关闭时间
+			
+			type: 'info',
 
-			complete: null	//关闭后回调事件
-        },
+			title: '',
+
+			content: '',
+
+			fade: true,
+
+			timeout: 3000,
+
+			closed: $.noop
+		},
 
         _create: function(){
-			this.options.classes[this.widgetFullName] = this.options.type;
-			this._addClass(this.widgetFullName);
+			this._addClass('ui-notice', this.options.type);
+
+			this.modal = this.document.find('.modal-ui-notice');
+			if(!this.modal.length){
+				this.modal = $('<div>')
+					.addClass('modal modal-ui-notice show')
+					.appendTo('body');
+			}
         },
         
         _init: function(){
-            this._handleOptions();
+			var that = this;
 
+			this._handleOptions();
             this.element.dialog({
             	title:　'',
     			size: 'sm',
 				fade: this.options.fade,
-    			content: this._tmpl('main', this.options), 
+    			content: this._tmpl('main'), 
     			backdrop: false,
-            	keyboard: false
+				keyboard: false,
+				mask: false,
+				modal: false,
+				mount: function(){
+					$(this).prependTo(that.modal);
+				},
+				closed: function(){					
+					if(!that.modal.find('.ui-notice').length){
+						that.modal.remove();
+					}
+				}
             });
 
             this._setAutoClose();
         },
 
-		_handleOptions: function(){
+		_handleOptions: function(){			
 			switch(this.options.type){
 				case 'success':
 					this.options.icon = 'glyphicon glyphicon-ok-sign';
@@ -53,35 +79,30 @@ define(['jquery', 'base', 'dialog'], function($){
 					this.options.icon = 'glyphicon glyphicon-remove-sign';
 					break;
 			}
-
-			if(this.options.message.jquery){
-				this.options.message = this._outerHtml(this.options.message);
-			}
         },
         
-        _setAutoClose: function(){
-        	
+        _setAutoClose: function(){        	
         	var that = this; 
-        	var interval, time;
+        	var interval, timeout;
         	
-        	if(this.options.time <= 0){
-				this._trigger('complete');
+        	if(this.options.timeout <= 0){
 				this.close();
+				this._trigger('closed');				
         	}else{
-				time = Math.ceil(this.options.time / 500);
+				timeout = Math.ceil(this.options.timeout / 500);
 				interval = setInterval(function(){
-					time--;
-					if(time <= 0){
+					timeout--;
+					if(timeout <= 0){
 						clearInterval(interval);
-						that._trigger('complete');
 						that.close();
+						that._trigger('closed');
 					}
 				}, 500);
         	}
         },
 
 		close: function(){
-        	this.element.dialog('close');
+			this.element.dialog('close');
         }
     	
     });

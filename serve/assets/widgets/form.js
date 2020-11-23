@@ -1,12 +1,11 @@
-define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymce','jeDate'], function ($) {
+define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepicker', 'jquerytinymce','jeDate' */], function ($, moment) {
 
-	//定义部件
-	$.widget('ui.form', $.ui.base, {
+	$.widget('ui.form', {
 
 		templates: {
 
 			main: '\
-				<div class="container-fluid">\
+				<div class="container-fluid gutter-15">\
 					<form class="form-horizontal">\
 						{{if title}}{{tmpl "title"}}{{/if}}\
 						{{tmpl(items) "item"}}\
@@ -16,7 +15,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 			title: '\
 				<div class="row">\
 					<div class="col-md-12">\
-						<h5>${title}</h5>\
+						<h5>{{title}}</h5>\
 					</div>\
 				</div>',
 
@@ -33,11 +32,11 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 				{{tmpl(items) "aItem"}}',
 
 			aItem: '\
-				<div class="${col}">\
-					{{if label}}\
+				<div class="{{col}}">\
+					{{if $data.label!=null}}\
 						<div class="form-group">\
-							<label class="${labelcol} control-label">${label}</label>\
-							<div class="${valuecol}">\
+							<label class="{{labelCol}} control-label">{{label}}</label>\
+							<div class="{{valueCol}}">\
 								{{if items}}\
 									<div class="row">\
 										{{tmpl(items) "aItem"}}\
@@ -55,23 +54,23 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 			oItem: '\
 				{{if items}}\
 					<div class="form-group">\
-						<label class="${labelcol} control-label">${label}</label>\
-						<div class="${valuecol}">\
+						<label class="{{labelCol}} control-label">{{label}}</label>\
+						<div class="{{valueCol}}">\
 							<div class="row">\
 								{{tmpl(items) "aItem"}}\
 							</div>\
 						</div>\
 					</div>\
-				{{else label}}\
+				{{else $data.label!=null}}\
 					<div class="form-group">\
-						<label class="${labelcol} control-label">${label}</label>\
-						<div class="${valuecol}">\
+						<label class="{{labelCol}} control-label">{{label}}</label>\
+						<div class="{{valueCol}}">\
 							{{tmpl "typeAssign"}}\
 						</div>\
 					</div>\
 				{{else}}\
 					<div class="row">\
-						<div class="${col}">\
+						<div class="{{col}}">\
 							{{tmpl "typeAssign"}}\
 						</div>\
 					</div>\
@@ -112,65 +111,65 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 				<div class="widget"></div>',
 
 			span: '\
-				<span class="control-span {{if _type}}${_type}{{/if}}">{{html text}}</span>',
+				<span class="control-span {{if _type}}{{_type}}{{/if}}">{{html text}}</span>',
 
 			select: '\
-				<select name="${name}" class="form-control {{if _type}}${_type}{{/if}} {{if value}}value{{/if}} {{if chosen}}chosen{{/if}}" {{if disabled}}disabled{{/if}} {{if multiple}}multiple{{/if}}>\
+				<select name="{{name}}" class="form-control {{if _type}}{{_type}}{{/if}} {{if value}}value{{/if}} {{if chosen}}chosen{{/if}}" {{if disabled}}disabled{{/if}} {{if multiple}}multiple{{/if}}>\
 					{{tmpl(options) "option"}}\
 				</select>',
 
 			option: '\
-				<option value="${value}" {{if items}}class="items"{{/if}}>${label}</option>',
+				<option value="{{value}}" {{if items}}class="items"{{/if}}>{{label}}</option>',
 
 			textarea: '\
-				<textarea name="${name}" class="form-control {{if tinymce}}tinymce{{/if}}" {{if disabled}}disabled{{/if}} rows="3" placeholder="${placeholder}">${value}</textarea>',
+				<textarea name="{{name}}" class="form-control {{if tinymce}}tinymce{{/if}}" {{if disabled}}disabled{{/if}} rows="{{if rows}}{{rows}}{{else}}3{{/if}}" placeholder="{{placeholder}}">{{value}}</textarea>',
 
 			text: '\
-				<input type="${type}" name="${name}" class="form-control {{if _type}}${_type}{{/if}}" value="${value}" {{if disabled}}disabled{{/if}} {{if readonly}}readonly{{/if}} placeholder="${placeholder}">',
+				{{if $data._type==="date"}}\
+					<div class="input-group">\
+						<input type="text" name="{{name}}" class="form-control date" value="{{value}}" {{if disabled}}disabled{{/if}} {{if readonly}}readonly{{/if}} placeholder="{{placeholder}}">\
+						<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>\
+					</div>\
+				{{else}}\
+					<input type="{{type}}" name="{{name}}" class="form-control {{if _type}}{{_type}}{{/if}}" value="{{value}}" {{if disabled}}disabled{{/if}} {{if readonly}}readonly{{/if}} placeholder="{{placeholder}}">\
+				{{/if}}',
 
 			hidden: '\
-				<input type="${type}" name="${name}" value="${value}">',
+				<input type="{{type}}" name="{{name}}" value="{{value}}">',
 
 			radio: '\
 				<div class="radio-control ">{{tmpl(options) "radioItem"}}</div>',
 
 			radioItem: '\
-				<label class="radio-inline"><input type="radio" name="${$parent.data.name}" {{if items}}class="items {{if _type}}${_type}{{/if}}"{{/if}} value="${value}" {{if disabled}}disabled{{/if}}> ${label}</label>',
+				<label class="radio-inline"><input type="radio" name="{{$parent.data.name}}" {{if items}}class="items {{if _type}}{{_type}}{{/if}}"{{/if}} value="{{value}}" {{if disabled}}disabled{{/if}}> {{label}}</label>',
 
 			checkbox: '\
 				<div class="checkbox-control">{{tmpl(options) "checkboxItem"}}</div>',
 
 			checkboxItem: '\
-				<label class="checkbox-inline"><input type="checkbox" name="${$parent.data.name}" value="${value}" {{if disabled}}disabled{{/if}}> ${label}</label>',
+				<label class="checkbox-inline"><input type="checkbox" name="{{$parent.data.name}}" value="{{value}}" {{if disabled}}disabled{{/if}}> {{label}}</label>',
 
 			file: '\
-				<input type="${type}" name="${name}" class="form-control" {{if accept}}accept="${accept}"{{/if}}>',
+				<input type="{{type}}" name="{{name}}" class="form-control" {{if accept}}accept="{{accept}}"{{/if}}>',
 
 			button: '\
-				<button type="${type}" class="${clas} action">{{if icon}}<i class="${icon}"></i> {{/if}}${text}</button>'
+				<button type="{{type}}" class="action {{classes}}">{{if icon}}<i class="{{icon}}"></i>{{/if}} {{text}}</button>'
 
 		},
-
-		//配置选项
+		
 		options: {
 
-			//数据源
-			source: {},
-
-			//表单标题
 			title: '',
 
-			//表单项
-			items: [],
+			source: null,
+			
+			items: null,
 
-			//按钮组
-			btns: [],
-
-			//验证规则
 			validate: null,
+			
+			btns: null,
 
-			//加载完成事件
-			complete: null
+			mounted: null
 		},
 
 		_create: function () {
@@ -234,7 +233,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 					//延时对象完成
 					this.completeDfd.resolve();
 
-					this._trigger('complete');
+					this._trigger('mounted', null, {});
 				});
 			});
 		},
@@ -258,16 +257,16 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 			}
 		},
 
-		_handleItemA: function(item){
+		_handleItemA: function(items){
 			var that = this;
-			var l = item.length;
+			var l = items.length;
 			var n;
-			$.each(item, function(i, v){
-				if(!v.col){
+			$.each(items, function(i, item){
+				if(!item.col){
 					n = 12/l;
-					v.col = 'col-md-' + (n == 2.4 ? '2-4' : n);
+					item.col = 'col-md-' + (n == 2.4 ? '2-4' : n);
 				}
-				that._handleItemO(v, i, item);
+				that._handleItemO(item, i, items);
 			});
 		},
 
@@ -292,13 +291,13 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 				});
 			}
 
-			if(item.label){
-				if(!item.labelcol){
-					item.labelcol = 'col-md-4';
-					item.valuecol = 'col-md-8';
-				}else if(!item.valuecol){
-					n = item.labelcol.charAt( item.labelcol.length - 1 );
-					item.valuecol = 'col-md-' + (12 - parseInt(n));
+			if(item.label!=null){
+				if(!item.labelCol){
+					item.labelCol = 'col-md-4';
+					item.valueCol = 'col-md-8';
+				}else if(!item.valueCol){
+					n = item.labelCol.charAt( item.labelCol.length - 1 );
+					item.valueCol = 'col-md-' + (12 - parseInt(n));
 				}
 			}
 
@@ -401,8 +400,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 				type: opts.type || 'GET',
 				data: ajaxData,
 				contentType: opts.contentType || 'application/x-www-form-urlencoded; charset=utf-8',
-				success: function (res) {
-					res = res[item.source] || res.data || res.value || [];
+				success: function (res) {					
 					if ($.isFunction(opts.render)) {
 						item.options = opts.init.concat(opts.render.call(that.element[0], res, item));
 					} else {
@@ -456,6 +454,17 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 					parent.length ? parent.after(error) : element.after(error);
 				}
 			}));
+		},
+
+		_setDatepicker: function(inputs){			
+			inputs.each(function(i, input){                
+				$(input)
+				.closest(".input-group")
+				.datetimepicker({
+					format: 'YYYY-MM-DD HH:mm',
+        			locale: moment.locale('zh-cn')                    
+				});			
+			});			
 		},
 
 		_setRadios: function(elem){
@@ -703,8 +712,10 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 		},
 
 		_clickButton: function (event, tmpl) {
+			event.preventDefault();
+
 			var that = this;
-			var d = tmpl.data;
+			var d = tmpl.data;			
 
 			if (d.type === 'submit') {
 				this.validate(function (validate, data) {
@@ -721,8 +732,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 						d.click.call(that.element[0], event, data);
 					}
 				});
-			}
-			return false;
+			}			
 		},
 
 		_clickAppendItems: function(event, tmpl){
@@ -889,12 +899,12 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 			this._setValidate();			
 		},
 
-		validate: function (callback) {
+		validate: function (cb) {
 			var that = this;
 			this.completeDfd.done(function () {
 				var validate = true;
 				var dfds = [];
-				that.options.formData = that._serializeJson(that.form);
+				that.options.formData = that.form.serializeJSON();
 				if (that.validator) {
 					validate = that.validator.form();
 				}
@@ -915,7 +925,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 					}));
 				});
 				$.when.apply($, dfds).done(function(){
-					callback.call(that.element[0], validate, that.options.formData);
+					cb.call(that.element[0], validate, that.options.formData);
 				});
 			});
 		},
@@ -923,7 +933,7 @@ define(['jquery', 'base', 'validate', 'chosen', 'daterangepicker', 'jquerytinymc
 		getData: function(callback){
 			var that = this;
 			this.completeDfd.done(function () {
-				that.options.formData = that._serializeJson(that.form);
+				that.options.formData = that.form.serializeJSON();
 				callback.call(that.element[0], that.options.formData);
 			});
 		},

@@ -1,10 +1,12 @@
-body{
-    background-color: rgba(0, 0, 0, 0.03);
+/*----------.ui-servicesPanel----------*/
+
+.ui-servicesPanel{
+    padding: 15px;
+    width: 600px;
 }
-#asideAccordion .card-body{
-    padding: 0;
+.ui-servicesPanel .tab-content h6{
+    margin-top: 20px;
 }
-.article{
-    min-height: calc(100vh - 56px);
-    background-color: #fff;
+.ui-servicesPanel .tab-content i{
+    font-size: 12px;
 }
