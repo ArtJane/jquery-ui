@@ -1,39 +1,35 @@
 define(['$'], function($){
 
-    $.widget('ui.layout', {        
+    $.widget('ui.layout', {
 
         templates: {
 
             main: '\
                 <div class="layout-header">{{tmpl "layoutHeader"}}</div>\
-                <div class="layout-body">\
+                <div class="layout-body {{laying}}">\
                     <div class="layout-aside">{{tmpl "layoutAside"}}</div>\
                     <div class="layout-article"></div>\
-                    {{if bar}}\
-                        <div class="layout-bar">{{tmpl "layoutBar"}}</div>\
-                    {{/if}}\
                     <div class="layout-footer">{{tmpl "layoutFooter"}}</div>\
                 </div>',
 
             layoutHeader: '\
-                <nav class="navbar navbar-primary {{if bar}}bar{{/if}}">\
-                    {{tmpl "navbarHeader"}}\
-                    {{tmpl "navbarCollapse"}}\
+                <nav class="navbar navbar-{{theme}}">\
+                    <div class="{{laying}}">\
+                        {{tmpl "navbarHeader"}}\
+                        {{tmpl "navbarCollapse"}}\
+                    </div>\
                 </nav>',
 
             navbarHeader: '\
                 <div class="navbar-header">\
                     {{tmpl(brand) "navbarBrand"}}\
-                    {{if bar}}\
-                        <span class="navbar-switch pull-right"><i class="glyphicon glyphicon-cog"></i></span>\
-                    {{/if}}\
                     <span class="navbar-toggle collapsed" data-toggle="collapse" data-target="#layout-header-navbar"><i class="glyphicon glyphicon-menu-hamburger"></i></span>\
                     <span class="navbar-switch pull-left"><i class="glyphicon glyphicon-chevron-left"></i></span>\
                 </div>',
 
             navbarBrand: '\
                 <div class="navbar-brand">\
-                    <a href="{{if href}}{{href}}{{else}}javascript:;{{/if}}" {{if target}}target="{{target}}"{{/if}}>\
+                    <a class="icon" href="{{if href}}{{href}}{{else}}javascript:;{{/if}}" {{if target}}target="{{target}}"{{/if}}>\
                         {{if icon}}\
                             <i class="{{icon}}"></i>\
                         {{else img}}\
@@ -42,8 +38,7 @@ define(['$'], function($){
                             <i class="glyphicon glyphicon-home"></i>\
                         {{/if}}\
                     </a>\
-                    <span class="min"></span>\
-                    <span class="max">{{text}}</span>\
+                    <span class="text">{{text}}</span>\
                 </div>\
             ',
 
@@ -60,6 +55,8 @@ define(['$'], function($){
                     {{tmpl "navbarSearch"}}\
                 {{else $data.type==="btn"}}\
                     {{tmpl "navbarBtn"}}\
+                {{else $data.type==="text"}}\
+                    {{tmpl "navbarText"}}\
                 {{/if}}',
 
             navbarNav: '\
@@ -87,81 +84,68 @@ define(['$'], function($){
 
             navbarSearch: '\
                 <form class="navbar-form navbar-{{align}}">\
-                    <div class="form-group">\
+                    <div class="input-group">\
                         <input type="text" name="{{if name}}{{name}}{{else}}keyword{{/if}}" class="form-control" placeholder="{{if placeholder}}{{placeholder}}{{else}}搜索...{{/if}}">\
+                        <span class="input-group-btn">\
+                            <button type="submit" class="{{if classes}}{{classes}}{{else}}btn btn-default{{/if}}">{{$data.text||"搜索"}}</button>\
+                        </span>\
                     </div>\
-                    <button type="submit" class="{{if classes}}{{classes}}{{else}}btn btn-default{{/if}}">{{$data.text||"搜索"}}</button>\
                 </form>',
 
             navbarBtn: '\
                 <button type="button" class="navbar-item-clickable navbar-btn navbar-{{align}} {{if classes}}{{classes}}{{else}}btn btn-default{{/if}}">{{text}}</button>',
 
-            layoutAside: '\
-                {{tmpl "asideMenu"}}',
+            navbarText: '\
+                <p class="navbar-text navbar-{{align}}">{{html text}}</p>',
 
-            asideMenu: '\
-                <ul class="menu">\
+
+            layoutAside: '\
+                {{tmpl "menu"}}',
+
+            menu: '\
+                <ul class="list-group menu">\
                     {{tmpl(menu) "menuItem"}}\
                 </ul>',
 
             menuItem: '\
                 {{if menu}}\
-                    <li>\
-                        <a href="javascript:;" data-toggle="collapse" data-target="#layout-menu-{{$index}}">\
-                            <i class="glyphicon glyphicon-menu-left pull-right"></i>\
+                    <li class="list-group-item dropdown">\
+                        <a class="" href="javascript:;" data-toggle="dropdown">\
                             {{if icon}}<i class="{{icon}}"></i>{{else}}<i class="glyphicon glyphicon-folder-open"></i>{{/if}}\
                             <span>{{text}}</span>\
+                            <i class="glyphicon glyphicon-menu-right"></i>\
                         </a>\
-                        <ul class="menu collapse" id="layout-menu-{{$index}}">\
-                            {{tmpl(menu) "menuLink"}}\
+                        <ul class="dropdown-menu">\
+                            {{tmpl(menu) "dropdownItem"}}\
                         </ul>\
                     </li>\
                 {{else}}\
-                    {{tmpl "menuLink"}}\
+                    <li class="list-group-item">\
+                        <a href="{{if href}}{{href}}{{else}}javascript:;{{/if}}" {{if target}}target="{{target}}"{{/if}}>\
+                            {{if icon}}<i class="{{icon}}"></i>{{else}}<i class="glyphicon glyphicon-file"></i>{{/if}}\
+                            <span>{{text}}</span>\
+                        </a>\
+                    </li>\
                 {{/if}}',
 
-            menuLink: '\
+            dropdownItem: '\
                 <li>\
                     <a href="{{if href}}{{href}}{{else}}javascript:;{{/if}}" {{if target}}target="{{target}}"{{/if}}>\
-                        {{if icon}}<i class="{{icon}}"></i>{{else}}<i class="glyphicon glyphicon-file"></i>{{/if}}\
                         <span>{{text}}</span>\
                     </a>\
                 </li>',
-
-            layoutBar: '\
-                {{if $data.bar&&$data.bar.length}}\
-                    <div class="tab-inverse">\
-                        <ul class="nav nav-justified nav-tabs">\
-                            {{tmpl(bar) "tab"}}\
-                        </ul>\
-                        <div class="tab-content">\
-                            {{tmpl(bar) "tabContent"}}\
-                        </div>\
-                    </div>\
-                {{/if}}',
-
-            tab: '\
-                <li {{if active}}class="active"{{/if}}>\
-                    <a href="#layout-bar-{{$index}}" data-toggle="tab">\
-                        {{if icon}}<i class="{{icon}}"></i>{{/if}}\
-                        {{if text}}{{text}}{{/if}}\
-                    </a>\
-                </li>',
-
-            tabContent: '\
-                {{if $.isFunction($data.content)}}\
-                    <div class="tab-pane function {{if active}}active{{/if}}" id="layout-bar-{{$index}}"></div>\
-                {{else}}\
-                    <div class="tab-pane {{if active}}active{{/if}}" id="layout-bar-{{$index}}">{{html content}}</div>\
-                {{/if}}',
 
             layoutFooter: '\
                 <div class="container text-center">\
                     <p>{{html footer}}</p>\
                 </div>'
-        }, 
-        
+        },
+
         options: {
+
+            theme: 'default',
+
+            laying: 'container-fluid',
 
             brand: {},
 
@@ -171,9 +155,7 @@ define(['$'], function($){
 
             menu: [],
 
-            footer: '',
-
-            bar: null
+            footer: ''
         },
 
         _create: function(){
@@ -211,12 +193,12 @@ define(['$'], function($){
                 o._source = o.source;
             }
 
-            if (o._source) {                
+            if (o._source) {
                 o._source.call(this.element[0], {
                     source: {}
                 }, next);
-            } else {              
-                next({                    
+            } else {
+                next({
                     source: o.source
                 });
             }
@@ -299,10 +281,20 @@ define(['$'], function($){
                     that.aside.find(target).parent().removeClass('open');
                 });
         },
-        
+
         _setPlugs: function(){
             var that = this;
 
+            /*this.element.find(".list-group-item.sub-menu").each(function (i, item) {
+                var data = that._tmplItem(item).data;
+                $(item).popover({
+                    trigger: 'focus',
+                    container: 'body',
+                    html: true,
+                    content: that._tmpl('menu', data)
+                });
+            });
+*/
             this.element.find(".dropdown-menu.function").each(function(i, item){
                 var data = that._tmplItem(item).data;
                 data.dropdown.call(that.element[0], {
@@ -328,7 +320,7 @@ define(['$'], function($){
             if (this.brand.hasClass('min')) {
                 this.brand.removeClass('min').closest('.navbar').removeClass('min');
                 this.body.removeClass('transform');
-                this.aside.addClass('extend');                
+                this.aside.addClass('extend');
             } else {
                 this.brand.addClass('min').closest('.navbar').addClass('min');
                 this.body.addClass('transform');
@@ -357,7 +349,7 @@ define(['$'], function($){
                     item: ctx.data
                 });
                 return false;
-            }			
+            }
         },
 
         _clickBarTab: function(event, ctx){
@@ -382,7 +374,7 @@ define(['$'], function($){
                     item: ctx.data,
                     form: form
                 });
-            }            
+            }
         },
 
         _hideNavbarCollapse: function(){
