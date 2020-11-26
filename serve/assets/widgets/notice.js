@@ -7,8 +7,8 @@ define(['$', 'dialog'], function($){
 			main: '\
 				<span class="icon {{icon}}"></span>\
 				<div>\
-					<div class="title">{{title}}</div>\
-					<div class="content">{{html content}}</div>\
+					{{if title}}<div class="title">{{title}}</div>{{/if}}\
+					{{if content}}<div class="content">{{html content}}</div>{{/if}}\
 				</div>'
     	},
     	

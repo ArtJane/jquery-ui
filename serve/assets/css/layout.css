@@ -124,7 +124,6 @@
 .layout-aside .list-group-item{
     padding: 0;
     height: 50px;
-    line-height: 50px;
 }
 .layout-aside .list-group-item > a{
     display: block;
@@ -136,7 +135,7 @@
     width: 50px;
     text-align: center;
     line-height: 46px;
-    font-size: 14px;
+    font-size: 12px;
 }
 .layout-aside .list-group-item > a span{
     display: inline-block;

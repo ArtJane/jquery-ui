@@ -122,6 +122,7 @@ select[multiple].form-control {
 }
 
 /*----------.ui-notice----------*/
+
 .ui-notice .modal-content{
     box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 }
@@ -156,7 +157,8 @@ select[multiple].form-control {
 }
 .ui-notice .modal-body > div .title{
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
+    margin-bottom: 5px;
 }
 
 /*----------.ui-heading----------*/

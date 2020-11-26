@@ -65,15 +65,15 @@ define(['$', 'group', 'notice'], function ($) {
                 {
                     text: '弹出多个',
                     click: function () {
-                        var count = 4;
+                        var count = 5;
                         var interval = setInterval(function () {
                             count--;
-                            if(count < 0){
+                            if(count < 1){
                                 clearInterval(interval);
                             }else{
                                 $('<div>').notice({
                                     type: 'success',
-                                    title: '成功',
+                                    title: '成功 - ' + count,
                                     content: '我是内容~'
                                 });
                             }

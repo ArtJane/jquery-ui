@@ -30,6 +30,10 @@ define(['$', 'page'], function ($, page) {
         loadArticle('base/notice', ctx);
     });
 
+    page('/table', function (ctx){
+        loadArticle('base/table', ctx);
+    });
+
     page({
         hashbang: true
     });
