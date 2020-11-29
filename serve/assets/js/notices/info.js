@@ -2,19 +2,14 @@ define(['$', 'group', 'notice'], function ($) {
 
     var config = `
 <pre>
-    var count = 5;
-    var interval = setInterval(function () {        
-        count--;
-        if(count < 1){
-            clearInterval(interval);
-        }else{
-            $('<div>').notice({
-                type: 'success',
-                title: '成功 - ' + count,
-                content: '我是内容~'
-            });
+    $('&lt;div&gt;').notice({
+        type: 'info',
+        title: '标题',
+        content: '我是内容~',        
+        closed: function(){
+            console.log('notice 关闭了~');
         }
-    }, 500);
+    });
 </pre>
     `;
 
@@ -22,20 +17,20 @@ define(['$', 'group', 'notice'], function ($) {
 
         $(ctx.element).group({
 
-            title: '信息提示',
+            title: '信息提示 / 信息',
 
             headingBtns: [
                 {
-                    text: '弹出多个',
+                    text: '信息',
                     click: function () {
-                        evel()
+                        eval(config.replace(/<pre>|<\/pre>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
                     }
                 }
             ],
 
             items: [
                 {
-                    title: 'notice 配置',
+                    title: '配置',
                     key: 'config',
                     widget: function (ctx) {
                         return $(ctx.element).html(config);

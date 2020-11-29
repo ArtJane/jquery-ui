@@ -8,7 +8,7 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
         
         brand: {
             icon: 'glyphicon glyphicon-globe',
-            text: 'JIAN2JUN',
+            text: 'jQuery-J2UI',
             href: '/'
         },
 
@@ -56,13 +56,22 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
                                 href: '/'
                             },
                             {
-                                text: '基础组件',
+                                text: '对话框',
+                                href: '/dialog'
+                            },
+                            {
+                                text: '信息提示',
+                                href: '/notice'
+                            },
+                            {
+                                text: '表格',
                                 dropdown: [
-                                    {text: '对话框', href: '/dialog'},
-                                    {text: '信息提示', href: '/notice'},
-                                    {text: '表格', href: '/table'},
-                                    {text: '表单', href: '/form'}
+                                    {text: '基本', href: '/table'}
                                 ]
+                            },
+                            {
+                                text: '表单',
+                                href: '/form'
                             },
                             {
                                 text: '高级组件',
@@ -123,6 +132,49 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
                     icon: 'glyphicon glyphicon-dashboard',
                     text: '概述',
                     href: '/'
+                },
+                {
+                    icon: 'glyphicon glyphicon-comment',
+                    text: '对话框',
+                    menu: [
+                        {text: '配置', href: '/dialogs/config'},
+                        {text: '小号', href: '/dialogs/sm'},
+                        {text: '中号', href: '/dialogs/md'},
+                        {text: '大号', href: '/dialogs/lg'},
+                        {text: '垂直居中', href: '/dialogs/centered'},
+                        {text: '禁用关闭', href: '/dialogs/closable'},
+                        {text: '禁用效果', href: '/dialogs/fade'}
+                    ]
+                },
+                {
+                    icon: 'glyphicon glyphicon-comment',
+                    text: '信息提示',
+                    menu: [
+                        {text: '配置', href: '/notices/config'},
+                        {text: '信息', href: '/notices/info'},
+                        {text: '成功', href: '/notices/success'},
+                        {text: '警告', href: '/notices/warning'},
+                        {text: '失败', href: '/notices/danger'},
+                        {text: '弹出多个', href: '/notices/many'}
+                    ]
+                },
+                {
+                    icon: 'glyphicon glyphicon-info-sign',
+                    text: '表格',
+                    menu: [
+                        {text: '配置', href: '/tables/config'},
+                        {text: '基本', href: '/tables/base'},
+                        {text: '列渲染', href: '/tables/columns'},
+                        {text: '动态数据', href: '/tables/source'},
+                        {text: '分页', href: '/tables/paging'},
+                        {text: '记录操作', href: '/tables/action'},
+                        {text: '记录选择', href: '/tables/select'}
+                    ]
+                },
+                {
+                    icon: 'glyphicon glyphicon-record',
+                    text: '表单',
+                    href: '/form'
                 },
                 {
                     icon: 'glyphicon glyphicon-tasks',

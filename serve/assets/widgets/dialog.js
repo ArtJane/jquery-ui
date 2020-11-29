@@ -132,8 +132,6 @@ define(['$'], function($) {
         _setCenter: function(){
             if(this.options.centered){
                 height = this.dialog.outerHeight();
-                console.log(height)
-                console.log(this.window.height())
                 this.dialog.css({
                     marginTop: (this.window.height() - height) / 2,
                 });

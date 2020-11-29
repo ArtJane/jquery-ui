@@ -136,7 +136,7 @@ define(['$'], function($){
                 </li>',
 
             layoutFooter: '\
-                <div class="container text-center">\
+                <div class="container">\
                     <p>{{html footer}}</p>\
                 </div>'
         },
