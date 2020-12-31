@@ -17,6 +17,8 @@ var require = {
         validate: '../vendors/jquery/jquery.validate',
         moment: '../vendors/moment/moment',
         datetimepicker: '../vendors/datetimepicker/datetimepicker',
+        tinymce: '../vendors/tinymce/tinymce.min',
+        jqueryTinymce: '../vendors/tinymce/jquery.tinymce',
 		page: '../vendors/page/page',
         layout: '../widgets/layout',
         dialog: '../widgets/dialog',
@@ -32,6 +34,7 @@ var require = {
         stepsPage: '../widgets/stepsPage',
     },
     shim: {
-        bootstrap: ['jquery']
+        bootstrap: ['jquery'],
+        jqueryTinymce: ['jquery', 'tinymce']
     }   
 };

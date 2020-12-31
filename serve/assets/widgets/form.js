@@ -1,4 +1,4 @@
-define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepicker', 'jquerytinymce','jeDate' */], function ($, moment) {
+define(['$', 'moment', 'validate', 'datetimepicker', 'jqueryTinymce'/* , 'chosen', 'daterangepicker', 'jeDate' */], function ($, moment) {
 
 	$.widget('ui.form', {
 
@@ -194,8 +194,6 @@ define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepick
 		_init: function (){
 
 			this._handleItems(function () {
-
-				window.tinymce = null;
 
 				this.element.html(this._tmpl('main', this.options));
 				this.form = this.element.find('form');
@@ -608,12 +606,13 @@ define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepick
 
 		_setTinymce: function(textarea){
 			var that = this;
+			var data;
 			if(!textarea){
 				this.element.find('textarea.tinymce').each(function(){
 					that._setTinymce($(this));
 				});
 			}else{
-				var data = this._tmplItem(textarea).data;
+				data = this._tmplItem(textarea).data;
 				textarea.tinymce($.extend({
 					language: 'zh_CN',
 					plugins: [
@@ -624,9 +623,7 @@ define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepick
 					menubar: false,
 					toolbar: 'undo redo | styleselect | forecolor backcolor | cut copy paste | bullist numlist outdent indent | link image media table template',
 					images_upload_handler: function (blobInfo, success, failure){
-
 						that._getUploadOpts(function(){
-
 							var xhr, formData;
 							xhr = new XMLHttpRequest();
 							xhr.withCredentials = false;
@@ -651,7 +648,7 @@ define(['$', 'moment', 'validate', 'datetimepicker'/* , 'chosen', 'daterangepick
 							xhr.send(formData);
 						});
 					}
-				}, data.tinymce));
+				}, $.isPlainObject(data.tinymce) ? data.tinymce : null));
 			}
 		},
 

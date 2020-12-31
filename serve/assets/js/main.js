@@ -52,39 +52,24 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
                         type: 'nav',
                         items: [
                             {
-                                text: '概述',
-                                href: '/'
-                            },
-                            {
-                                text: '对话框',
-                                href: '/dialog'
-                            },
-                            {
-                                text: '信息提示',
-                                href: '/notice'
-                            },
-                            {
-                                text: '表格',
+                                text: '通知',
                                 dropdown: [
-                                    {text: '基本', href: '/table'}
+                                    {text: '一个通知', href: '/'},
+                                    {text: '另一个通知', href: '/'}
                                 ]
                             },
                             {
-                                text: '表单',
-                                href: '/form'
-                            },
-                            {
-                                text: '高级组件',
+                                text: '任务',
                                 dropdown: (function () {
                                     return [
-                                        {text: '布局', href: '/layout'},
-                                        {text: '集合页', href: '/group'},
-                                        {text: '列表页', href: '/listPage'},
-                                        {text: '详细页', href: '/detailPage'},
-                                        {text: '分步页', href: '/stepPage'},
-                                        {text: '弹出页', href: '/dialogPage'}
+                                        {text: '一个任务', href: '/'},
+                                        {text: '另一个任务', href: '/'}
                                     ];
                                 })()
+                            },
+                            {
+                                text: '第三方跳转',
+                                href: '/'
                             }
                         ]
                     }
@@ -92,31 +77,14 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
                 ],
                 right: [
                     {
-                        type: 'text',
-                        text: 'abc'
-                    },
-                    {
                         type: 'nav',
                         items: [
                             {
-                                text: '基础组件',
-                                dropdown: [
-                                    {text: '对话框', href: '/dialog'},
-                                    {text: '信息提示', href: '/notice'},
-                                    {text: '表格', href: '/table'},
-                                    {text: '表单', href: '/form'}
-                                ]
-                            },
-                            {
-                                text: '高级组件',
+                                text: '用户中心',
                                 dropdown: (function () {
                                     return [
-                                        {text: '布局', href: '/layout'},
-                                        {text: '集合页', href: '/group'},
-                                        {text: '列表页', href: '/listPage'},
-                                        {text: '详细页', href: '/detailPage'},
-                                        {text: '分步页', href: '/stepPage'},
-                                        {text: '弹出页', href: '/dialogPage'}
+                                        {text: '姓名：jian2jun', href: '/'},
+                                        {text: '手机: 18800000000', href: '/'}
                                     ];
                                 })()
                             }
@@ -174,7 +142,11 @@ define(['$', 'router', 'layout', 'dialog', 'notice'], function($){
                 {
                     icon: 'glyphicon glyphicon-record',
                     text: '表单',
-                    href: '/form'
+                    menu: [
+                        {text: '配置', href: '/forms/config'},
+                        {text: '基本', href: '/forms/base'},
+                        {text: '富文本', href: '/forms/editor'}
+                    ]
                 },
                 {
                     icon: 'glyphicon glyphicon-tasks',

@@ -102,6 +102,11 @@ define(['$', 'page'], function ($, page) {
         loadArticle('tables/select', ctx);
     });
 
+    page('/forms/editor', function (ctx){
+        loadArticle('forms/editor', ctx);
+    });
+
+
     page({
         hashbang: true
     });
